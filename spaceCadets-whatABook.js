@@ -12,8 +12,6 @@ const { MongoClient } = require('mongodb');
 const url = 'mongodb+srv://WhatABook_user:s3cret@whatabook.0pwpong.mongodb.net/';
 const dbName = '335project';
 
-// Create a new MongoClient instance
-const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Function to initialize the database
 async function initDatabase() {
