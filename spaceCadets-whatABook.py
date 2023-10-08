@@ -12,10 +12,10 @@ from pymongo import MongoClient
 from pprint import pprint
 
 #Import a connection string to connect to
-client = MongoClient("mongodb+srv://web420_user:s3cret@composers.7jfs9oc.mongodb.net/")
+client = MongoClient("mongodb+srv://WhatABook_user:s3cret@whatabook.0pwpong.mongodb.net/")
 
 #Configure a variable to access WEB335DB
-db = client["web420DB"]
+db = client["web335project"]
 
 #Write queries to store a list of customers and books as variables
 customers = (db.customers.find({}))
