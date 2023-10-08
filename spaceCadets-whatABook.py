@@ -5,75 +5,70 @@
 # Description: Python for WhatABook
 #-----------------------------------------------------
 
-#Import MongoClient
-from pymongo import MongoClient
+import pymongo
 
-#Import pprint module
-from pprint import pprint
+# Connect to MongoDB
+client = pymongo.MongoClient("mongodb+srv://WhatABook_user:s3cret@whatabook.0pwpong.mongodb.net/")
 
-#Import a connection string to connect to
-client = MongoClient("mongodb+srv://WhatABook_user:s3cret@whatabook.0pwpong.mongodb.net/")
+# Access the "books" collection
+db = client.WhatABook
+books_collection = db.books
 
-#Configure a variable to access WEB335DB
-db = client["web335project"]
+# Display a list of Books
+def display_books():
+    for book in books_collection.find():
+        print(f"Title: {book['title']}, Genre: {book['genre']}, Author: {book['author']}")
 
-#Write queries to store a list of customers and books as variables
-customers = (db.customers.find({}))
-books = (db.books.find({}))
+def display_books_by_genre():
+    # Specify the genre
+    genre = input("Enter genre: ")
 
-#Print a label for the following output
-print("All books:")
+    # Display a list of books by genre
+    for book in books_collection.find({"genre": genre}):
+        print(f"Title: {book['title']}, Author: {book['author']}")
 
-#Print all books to the console
-for doc in books:
-    pprint(doc)
-    print('')
+def display_books_by_author():
+    # Specify the author
+    author = input("Enter author: ")
 
-#Prompt the user to enter a genre
-genre = input("Choose a genre from the following choices: Mystery, Fantasy, or Thriller: ").title()
+    # Display a list books by author
+    for book in books_collection.find({"author": author}):
+        print(f"Title: {book['title']}, Genre: {book['genre']}")
 
-#If the genre input matches one of the valid options:
-if genre == "Mystery" or genre == "Fantasy" or genre == "Thriller":
-    #Store a list of books in the selected genre in a variable
-    genre_list = (db.books.find({"genre": genre}))
+def display_book_by_id():
+    # Specify the bookId
+    book_id = input("Enter bookId: ")
 
-    #Print a heading to label the genre output
-    print(genre + " Books:")
+    # Display a book by bookId
+    book = books_collection.find_one({"bookId": book_id})
+    if book:
+        print(f"Title: {book['title']}, Genre: {book['genre']}, Author: {book['author']}")
+    else:
+        print(f"Book with bookId {book_id} not found.")
 
-    #For every book in the list with the inputted genre:
-    for book in genre_list:
-        #Print the book and a blank line to the console
-        pprint(book)
-        print('')
-else:
-    #Otherwise, print an error message stating that the input was invalid
-    print("Error: Invalid genre")
-    print('')
+#Menu-driven interface
+while True:
+    print('\nMenu:')
+    print("1. Display a list of books")
+    print("2. Display a list of books by genre")
+    print("3. Display a list of books by author")
+    print("4. Display a book by bookId")
+    print("5. Exit")
 
-#Declare an empty list to hold customer IDs
-id_list = []
+    choice = input("Enter your choice: ")
 
-#For every customer document
-for doc in customers:
-    #Append a customer ID to the id list
-    id_list.append(doc["customerId"])
+    if choice == "1":
+        display_books()
+    elif choice == "2":
+        display_books_by_genre()
+    elif choice == "3":
+        display_books_by_author()
+    elif choice == "4":
+        display_book_by_id()
+    elif choice == "5":
+        break
+    else:
+        print("Invalid choice. Please select a valid option.")
 
-#Prompt the user to enter a customer ID
-id = input("Enter a customer ID (Ex: c001, c002): ")
-
-#If the id input matches one of the valid options:
-if id in id_list:
-    #Run a query to find the chosen user document and store it as a variable
-    list_user = (db.customers.find_one({"customerId": id}))
-
-    #Output the name of the user whose wishlist is being outputted
-    print(list_user["firstName"] + " " + list_user["lastName"] + "'s wishlist:")
-    
-    #For every item in the chosen user's wishlist
-    for item in list_user["wishlistItems"]:
-        #Print the wishlist item followed by a blank line
-        pprint(item)
-        print("")
-else:
-    #Otherwise, print an error message stating that the input was invalid
-    print("Error: Invalid ID")
+# Close the MongoDB connection
+client.close()
